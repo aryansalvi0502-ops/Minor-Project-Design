@@ -137,3 +137,19 @@ def root():
         "model_loaded": prediction_service.is_ready,
         "model_version": prediction_service.model_version
     }
+
+@app.get("/health", tags=["Health"])
+@app.get(f"{settings.API_V1_STR}/health", tags=["Health"])
+def health_check():
+    """
+    Public health check endpoint for cloud hosting providers (e.g., Render, Railway)
+    and load balancers to monitor container/service readiness.
+    """
+    return {
+        "status": "healthy",
+        "system": settings.PROJECT_NAME,
+        "environment": settings.ENV,
+        "model_loaded": prediction_service.is_ready,
+        "model_version": prediction_service.model_version,
+        "database": "connected"
+    }

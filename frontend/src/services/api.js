@@ -1,10 +1,59 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
+/**
+ * Determine the backend API Base URL:
+ * 1. Read VITE_API_BASE_URL (standard) or VITE_API_URL (backward compatibility).
+ * 2. Sanitize trailing slashes and ensure /api/v1 suffix is present.
+ * 3. In deployed environments (non-localhost/127.0.0.1), NEVER fall back to localhost or 127.0.0.1.
+ * 4. Fall back to local development URL (http://127.0.0.1:8000/api/v1) strictly when running locally.
+ */
+export function getApiBase() {
+  const envUrl = (
+    import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_API_URL ||
+    ""
+  ).trim();
+
+  if (envUrl) {
+    let clean = envUrl.replace(/\/+$/, "");
+    if (!clean.endsWith("/api/v1")) {
+      if (clean.endsWith("/api")) {
+        clean = `${clean}/v1`;
+      } else {
+        clean = `${clean}/api/v1`;
+      }
+    }
+    return clean;
+  }
+
+  // Deployed production environment check
+  const isBrowser = typeof window !== "undefined";
+  const hostname = isBrowser ? window.location.hostname : "";
+  const isLocalHost = !isBrowser || (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname.endsWith(".local")
+  );
+
+  if (!isLocalHost) {
+    // In production deployed frontend, NEVER use localhost / 127.0.0.1
+    return "";
+  }
+
+  // Local development fallback only
+  return "http://127.0.0.1:8000/api/v1";
+}
+
+const API_BASE = getApiBase();
 
 function formatErrorMessage(data, status) {
   if (!data) {
-    if (status === 401) return "Session expired or invalid. Please sign in again.";
+    if (status === 401) return "Session expired or invalid credentials. Please sign in again.";
     if (status === 403) return "Access denied. You do not have permission to perform this action.";
-    if (status === 404) return "Requested resource was not found.";
+    if (status === 404) return "Requested resource was not found on the server.";
+    if (status === 502 || status === 503 || status === 504) {
+      return "Backend service is currently waking up or temporarily unavailable. Please retry in a few moments.";
+    }
+    if (status >= 500) return `Server error (HTTP ${status}). Please try again later or contact your administrator.`;
     return `Server responded with HTTP ${status}.`;
   }
 
@@ -57,6 +106,14 @@ function clearStoredAuth() {
 }
 
 async function request(endpoint, options = {}) {
+  const currentApiBase = getApiBase();
+
+  if (!currentApiBase) {
+    throw new Error(
+      "Backend API URL is not configured. Please set the VITE_API_BASE_URL environment variable in your Vercel project settings to your deployed backend URL (e.g. https://your-backend.onrender.com/api/v1) and trigger a redeployment."
+    );
+  }
+
   const token = getStoredToken();
   const headers = {
     "Content-Type": "application/json",
@@ -66,12 +123,19 @@ async function request(endpoint, options = {}) {
 
   let response;
   try {
-    response = await fetch(`${API_BASE}${endpoint}`, {
+    response = await fetch(`${currentApiBase}${endpoint}`, {
       ...options,
       headers,
     });
   } catch (netErr) {
-    throw new Error(`Network error: Unable to connect to server at ${API_BASE}. Please ensure backend is running.`);
+    const isLocal = currentApiBase.includes("127.0.0.1") || currentApiBase.includes("localhost");
+    if (isLocal) {
+      throw new Error(`Unable to connect to local server at ${currentApiBase}. Please ensure your FastAPI backend is running locally.`);
+    } else {
+      throw new Error(
+        `Unable to reach backend service at ${currentApiBase}. If your backend is hosted on a free cloud tier (such as Render), it may take 30–50 seconds to wake up from idle. Please wait a moment and try again.`
+      );
+    }
   }
 
   if (response.status === 401 && !endpoint.includes("/auth/login")) {
