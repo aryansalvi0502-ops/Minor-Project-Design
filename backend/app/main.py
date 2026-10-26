@@ -115,11 +115,11 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS Middleware with restricted origins and automatic Vercel preview support
+# CORS Middleware with restricted origins and automatic Render/Vercel preview support
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origin_regex=r"https://.*(\.vercel\.app|\.onrender\.com)",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
