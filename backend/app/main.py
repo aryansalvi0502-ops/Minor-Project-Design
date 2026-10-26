@@ -14,16 +14,24 @@ from ml.prediction.explainer import explainer_service
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Ensure DB tables exist
-    Base.metadata.create_all(bind=engine)
-    
-    # Preload ML model and SHAP explainer into memory
-    prediction_service._load_model()
-    explainer_service._load_explainer()
-
-    # Seed baseline demonstration accounts for testing if fresh
-    db = SessionLocal()
+    # 1. Preload ML model and SHAP explainer into memory
     try:
+        prediction_service._load_model()
+        explainer_service._load_explainer()
+    except Exception as ml_err:
+        print(f"[ML Init Warning] Could not preload ML model: {ml_err}")
+
+    # 2. Startup: Ensure DB tables exist
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("[Database] Schema verified and tables created.")
+    except Exception as db_err:
+        print(f"[Database Warning] Could not auto-create tables on startup: {db_err}")
+
+    # 3. Seed baseline demonstration accounts for testing if fresh
+    db = None
+    try:
+        db = SessionLocal()
         demo_accounts = [
             ("admin@university.edu", "AdminPass123!", "System Administrator", "admin", "MITAOE Administration"),
             ("advisor@university.edu", "AdvisorPass123!", "Disha Malpure Ma'am (Advisor)", "advisor", "Computer Engineering"),
@@ -153,3 +161,10 @@ def health_check():
         "model_version": prediction_service.model_version,
         "database": "connected"
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    uvicorn.run("backend.app.main:app", host=host, port=port, reload=False)
+
