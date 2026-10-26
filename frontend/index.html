@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UDAAN | Student Success & Early-Warning System</title>
+    <meta name="description" content="UDAAN: Student Success & Early-Warning System featuring calibrated ML dropout risk prediction, SHAP explainability, and personalized academic recovery." />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232D6A4F'><path d='M12 2L1 7l11 5 9-4.09V17h2V7L12 2zm0 7.82L4.16 7 12 3.45 19.84 7 12 9.82z'/></svg>" />
+    <script>
+      // Prevent theme flashing before React hydrates
+      (function() {
+        var pref = localStorage.getItem('theme_preference') || 'system';
+        var theme = pref;
+        if (pref === 'system') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

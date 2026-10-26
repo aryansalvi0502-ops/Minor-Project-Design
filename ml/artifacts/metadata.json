@@ -1,0 +1,182 @@
+{
+  "version_tag": "v3.20261020.logistic_regression",
+  "algorithm_name": "Logistic Regression Baseline (Class-Weighted)",
+  "selected_algorithm": "logistic_regression",
+  "is_active": true,
+  "training_date": "2026-10-20T09:19:36.619755+00:00",
+  "dataset_version": "student_dropout_dataset_v3.csv",
+  "dataset_rows": 10000,
+  "random_seed": 42,
+  "features_used": [
+    "Age",
+    "Family_Income",
+    "Study_Hours_per_Day",
+    "Attendance_Rate",
+    "Assignment_Delay_Days",
+    "Travel_Time_Minutes",
+    "Stress_Index",
+    "GPA",
+    "Semester_GPA",
+    "CGPA",
+    "Gender",
+    "Internet_Access",
+    "Part_Time_Job",
+    "Scholarship",
+    "Semester",
+    "Department",
+    "Parental_Education"
+  ],
+  "excluded_features": [
+    "Student_ID"
+  ],
+  "numerical_features": [
+    "Age",
+    "Family_Income",
+    "Study_Hours_per_Day",
+    "Attendance_Rate",
+    "Assignment_Delay_Days",
+    "Travel_Time_Minutes",
+    "Stress_Index",
+    "GPA",
+    "Semester_GPA",
+    "CGPA"
+  ],
+  "categorical_features": [
+    "Gender",
+    "Internet_Access",
+    "Part_Time_Job",
+    "Scholarship",
+    "Semester",
+    "Department",
+    "Parental_Education"
+  ],
+  "transformed_feature_count": 32,
+  "selected_threshold": 0.29,
+  "calibration_method": "sigmoid_platt_scaling_cv3",
+  "candidate_comparison": {
+    "random_forest": {
+      "name": "Random Forest Classifier (Balanced Subsample)",
+      "train_duration_sec": 0.82,
+      "val_f1": 0.578,
+      "val_recall": 0.6091,
+      "val_precision": 0.5499,
+      "val_roc_auc": 0.8141,
+      "val_pr_auc": 0.5926
+    },
+    "logistic_regression": {
+      "name": "Logistic Regression Baseline (Class-Weighted)",
+      "train_duration_sec": 0.04,
+      "val_f1": 0.5782,
+      "val_recall": 0.7649,
+      "val_precision": 0.4647,
+      "val_roc_auc": 0.8237,
+      "val_pr_auc": 0.6112
+    },
+    "xgboost": {
+      "name": "XGBoost Classifier (Scale Pos Weight)",
+      "train_duration_sec": 0.52,
+      "val_f1": 0.578,
+      "val_recall": 0.7139,
+      "val_precision": 0.4855,
+      "val_roc_auc": 0.8088,
+      "val_pr_auc": 0.5909
+    }
+  },
+  "metrics_train": {
+    "accuracy": 0.7434,
+    "precision": 0.4721,
+    "recall": 0.7585,
+    "f1": 0.5819,
+    "roc_auc": 0.8244,
+    "pr_auc": 0.5991,
+    "confusion_matrix": [
+      [
+        3954,
+        1398
+      ],
+      [
+        398,
+        1250
+      ]
+    ],
+    "true_negatives": 3954,
+    "false_positives": 1398,
+    "false_negatives": 398,
+    "true_positives": 1250,
+    "false_positive_rate": 0.2612,
+    "false_negative_rate": 0.2415
+  },
+  "metrics_val": {
+    "accuracy": 0.7373,
+    "precision": 0.4647,
+    "recall": 0.7649,
+    "f1": 0.5782,
+    "roc_auc": 0.8237,
+    "pr_auc": 0.6112,
+    "confusion_matrix": [
+      [
+        836,
+        311
+      ],
+      [
+        83,
+        270
+      ]
+    ],
+    "true_negatives": 836,
+    "false_positives": 311,
+    "false_negatives": 83,
+    "true_positives": 270,
+    "false_positive_rate": 0.2711,
+    "false_negative_rate": 0.2351
+  },
+  "metrics_test": {
+    "accuracy": 0.772,
+    "precision": 0.512,
+    "recall": 0.6657,
+    "f1": 0.5788,
+    "roc_auc": 0.8154,
+    "pr_auc": 0.5759,
+    "confusion_matrix": [
+      [
+        923,
+        224
+      ],
+      [
+        118,
+        235
+      ]
+    ],
+    "true_negatives": 923,
+    "false_positives": 224,
+    "false_negatives": 118,
+    "true_positives": 235,
+    "false_positive_rate": 0.1953,
+    "false_negative_rate": 0.3343
+  },
+  "metrics_test_at_default_50": {
+    "accuracy": 0.8113,
+    "precision": 0.6804,
+    "recall": 0.3739,
+    "f1": 0.4826,
+    "roc_auc": 0.8154,
+    "pr_auc": 0.5759,
+    "confusion_matrix": [
+      [
+        1085,
+        62
+      ],
+      [
+        221,
+        132
+      ]
+    ],
+    "true_negatives": 1085,
+    "false_positives": 62,
+    "false_negatives": 221,
+    "true_positives": 132,
+    "false_positive_rate": 0.0541,
+    "false_negative_rate": 0.6261
+  },
+  "limitations_notes": "1. Predictions are probabilistic risk estimates based on observational academic associations. They must never be used punitively or fatalistically. 2. Identifiers (Student_ID) are strictly excluded from prediction features. 3. Model performance depends on the completeness of academic reports; missing values are imputed via training medians. 4. Human advisor intervention and student data verification must always supersede automated scores."
+}
