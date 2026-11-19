@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from backend.app.models.academic_marks import SubjectAssessment
 from backend.app.schemas.profile import (
     ConceptGapOut,
